@@ -1,15 +1,7 @@
-# Evaluacion T3 - Analisis de Algoritmos y Estrategias de Programacion
-# Problema 1: Laberinto del Raton con Backtracking y Vidas
-
+# Problema 1 - Evaluacion T3
 import time
 
-# Representacion del laberinto 9x9 original
-# 'I' es el inicio (esquina inferior izquierda)
-# 'F' es el fin (esquina superior izquierda)
-# 0 son paredes (celdas grises en el grafico)
-# 1 son celdas normales
-# -1 resta 1 vida
-# -2 resta 2 vidas
+# Matriz del laberinto 9x9
 laberinto = [
     ['F',  1,  1,  1,  0,  1,  1,  1,  1],
     [-2,   0,  0, -1,  0,  1,  0,  1,  0],
@@ -22,7 +14,7 @@ laberinto = [
     ['I',  1, -1,  1,  1,  1,  0,  1,  1]
 ]
 
-# Direcciones en el orden solicitado: abajo, derecha, arriba, izquierda
+# Movimientos en orden: abajo, derecha, arriba, izquierda
 DIRECCIONES = [
     (1, 0, "Abajo"),
     (0, 1, "Derecha"),
@@ -30,13 +22,13 @@ DIRECCIONES = [
     (0, -1, "Izquierda")
 ]
 
-# Variables globales para el seguimiento
+# Variables globales
 paso_nro = 0
 camino_solucion = []
 visitados = set()
 
 def mostrar_laberinto(matriz):
-    # Imprime el laberinto de forma legible
+    # Imprimir laberinto
     for fila in matriz:
         print("  ".join(f"{str(celda):>2}" for celda in fila))
     print()
@@ -44,19 +36,19 @@ def mostrar_laberinto(matriz):
 def resolver_backtracking(f, c, vidas):
     global paso_nro
     
-    # Validar limites del laberinto
+    # Limites de la matriz
     if f < 0 or f >= 9 or c < 0 or c >= 9:
         return False
         
-    # Validar si es una pared (0)
+    # Si es pared
     if laberinto[f][c] == 0:
         return False
         
-    # Validar si ya fue visitado en el camino actual
+    # Si ya fue visitado
     if (f, c) in visitados:
         return False
         
-    # Calcular el costo de vidas al pisar la celda
+    # Costo de vidas
     valor_celda = laberinto[f][c]
     costo = 0
     if valor_celda == -1:
@@ -67,35 +59,35 @@ def resolver_backtracking(f, c, vidas):
     vidas_restantes = vidas - costo
     
     paso_nro += 1
-    print(f"Paso {paso_nro}: Entrando a ({f}, {c}) con valor {valor_celda} | Vidas restantes: {vidas_restantes}")
+    print(f"Paso {paso_nro}: Entrando a ({f}, {c}) con valor {valor_celda} | Vidas: {vidas_restantes}")
     
-    # Si las vidas llegan a cero o menos, el camino es inviable
+    # Si se queda sin vidas
     if vidas_restantes <= 0:
-        print(f"  -> [Inviable] El raton perdio todas sus vidas en ({f}, {c}). Retrocediendo...")
+        print(f"  -> [Inviable] El raton se quedo sin vidas en ({f}, {c}). Retrocediendo...")
         return False
         
-    # Registrar la celda como visitada y agregar al camino
+    # Guardar en camino y visitados
     visitados.add((f, c))
     camino_solucion.append((f, c))
     
-    # Si llegamos a la meta (F)
+    # Llegada a la meta
     if f == 0 and c == 0:
-        print(f"\nExito! Se logro llegar a la salida (F) en la posicion ({f}, {c}) con {vidas_restantes} vidas.")
+        print(f"\nExito! Se llego a la salida (F) en ({f}, {c}) con {vidas_restantes} vidas.")
         return True
         
-    # Intentar avanzar en las direcciones indicadas: abajo, derecha, arriba, izquierda
+    # Buscar en las 4 direcciones
     for df, dc, dir_nombre in DIRECCIONES:
         sig_f = f + df
         sig_c = c + dc
         
-        # Mostrar intento de movimiento
-        print(f"  -> Intentando mover hacia {dir_nombre} desde ({f}, {c}) a ({sig_f}, {sig_c})")
+        # Imprimir intento
+        print(f"  -> Intentando mover a {dir_nombre} desde ({f}, {c}) a ({sig_f}, {sig_c})")
         
         if resolver_backtracking(sig_f, sig_c, vidas_restantes):
             return True
             
-    # Backtracking: si ninguna direccion fue viable, deshacer cambios
-    print(f"  -> [Retroceso] No hay movimientos viables desde ({f}, {c}). Volviendo al paso anterior...")
+    # Deshacer camino si no sirve
+    print(f"  -> [Retroceso] No hay movimientos viables desde ({f}, {c}). Retrocediendo...")
     visitados.remove((f, c))
     camino_solucion.pop()
     return False
@@ -106,7 +98,7 @@ def main():
     print("====================================================\n")
     
     print("Iniciando la busqueda del camino...")
-    # El raton inicia en (8, 0) con 3 vidas
+    # Inicia en 8 0 con 3 vidas
     exito = resolver_backtracking(8, 0, 3)
     
     print("\n===================== RESULTADO =====================")
@@ -114,7 +106,7 @@ def main():
         print("RESULTADO: El raton logro salir del laberinto!")
         print(f"Camino tomado: {camino_solucion}\n")
         
-        # Crear la matriz solucion marcando el camino con 'X'
+        # Marcar camino con X
         matriz_solucion = [fila[:] for fila in laberinto]
         for f, c in camino_solucion:
             if matriz_solucion[f][c] not in ['I', 'F']:
@@ -123,7 +115,7 @@ def main():
         print("Matriz que indica el camino para salir:")
         mostrar_laberinto(matriz_solucion)
     else:
-        print("RESULTADO: No fue posible salir del laberinto de forma viable.")
+        print("RESULTADO: No fue posible salir del laberinto.")
     print("=====================================================")
 
 if __name__ == "__main__":
